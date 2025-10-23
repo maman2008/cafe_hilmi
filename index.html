@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hilmi Cafe</title>
+  <meta name="description" content="Hilmi Cafe - Modern cafe website with TailwindCSS and Vanilla JS" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%236b442f'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='52' fill='white' font-family='Arial'%3EHC%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fefaf5',
+              100: '#fdebd3',
+              200: '#f7d9b3',
+              300: '#eec493',
+              400: '#d7a86e',
+              500: '#b07d53',
+              600: '#8b5e3c',
+              700: '#6b442f',
+              800: '#553525',
+              900: '#3b2419'
+            }
+          },
+          boxShadow: {
+            smooth: '0 8px 30px rgba(0,0,0,0.08)'
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" rel="stylesheet">
+  <style>
+    .glass { backdrop-filter: saturate(160%) blur(8px); background: rgba(255,255,255,.7); }
+    .dark .glass { background: rgba(17,24,39,.6); }
+    .scrollbar-hide { scrollbar-width: none; } 
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="h-full bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+  <div id="app" class="min-h-screen flex flex-col">
+    <!-- Top Announcement -->
+    <div class="w-full bg-gradient-to-r from-brand-600 to-emerald-600 text-white text-sm py-2">
+      <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+        <p class="font-medium">Gratis ongkir untuk pesanan di atas Rp250.000</p>
+        <button id="btnCloseBanner" class="opacity-80 hover:opacity-100 transition">✕</button>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 glass shadow-smooth">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex h-16 items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <button id="btnMenu" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden">
+              <i class="ph ph-list text-2xl"></i>
+            </button>
+            <a href="#" class="flex items-center gap-2">
+              <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-white font-bold">HC</span>
+              <span class="text-lg font-semibold">Hilmi Cafe</span>
+            </a>
+          </div>
+
+          <div class="hidden md:flex items-center flex-1 max-w-2xl mx-4">
+            <div class="relative w-full">
+              <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              <input id="searchInput" type="text" placeholder="Cari menu kopi, teh, pastry..." class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              <button id="btnClearSearch" class="hidden absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="ph ph-x"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <button id="btnTheme" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle theme">
+              <i class="ph ph-moon text-xl hidden dark:inline"></i>
+              <i class="ph ph-sun text-xl dark:hidden"></i>
+            </button>
+            <button id="btnWishlist" class="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Wishlist">
+              <i class="ph ph-heart text-xl"></i>
+              <span id="badgeWishlist" class="absolute -top-1 -right-1 text-[11px] px-1.5 py-0.5 rounded-full bg-pink-600 text-white hidden">0</span>
+            </button>
+            <button id="btnCart" class="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Cart">
+              <i class="ph ph-shopping-cart text-xl"></i>
+              <span id="badgeCart" class="absolute -top-1 -right-1 text-[11px] px-1.5 py-0.5 rounded-full bg-brand-600 text-white hidden">0</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filters row -->
+        <div class="hidden md:flex items-center gap-2 pb-4">
+          <div class="flex gap-2 overflow-x-auto scrollbar-hide">
+            <button data-filter="all" class="filter-chip active px-3 py-1.5 rounded-full border text-sm border-gray-200 dark:border-gray-700 hover:border-brand-500">Semua</button>
+            <button data-filter="coffee" class="filter-chip px-3 py-1.5 rounded-full border text-sm border-gray-200 dark:border-gray-700 hover:border-brand-500">Coffee</button>
+            <button data-filter="tea" class="filter-chip px-3 py-1.5 rounded-full border text-sm border-gray-200 dark:border-gray-700 hover:border-brand-500">Tea</button>
+            <button data-filter="pastry" class="filter-chip px-3 py-1.5 rounded-full border text-sm border-gray-200 dark:border-gray-700 hover:border-brand-500">Pastry</button>
+            <button data-filter="food" class="filter-chip px-3 py-1.5 rounded-full border text-sm border-gray-200 dark:border-gray-700 hover:border-brand-500">Food</button>
+          </div>
+          <div class="ml-auto flex items-center gap-2">
+            <select id="sortSelect" class="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70 text-sm">
+              <option value="popularity">Terpopuler</option>
+              <option value="newest">Terbaru</option>
+              <option value="price_low">Harga Terendah</option>
+              <option value="price_high">Harga Tertinggi</option>
+            </select>
+            <button id="btnReserve" class="px-3 py-2 rounded-lg bg-brand-600 text-white hover:bg-brand-700 text-sm">Reservasi</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="relative">
+      <div class="max-w-7xl mx-auto px-4 py-10 md:py-16">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">Ngopi Nikmat di Hilmi Cafe</h1>
+            <p class="mt-3 text-gray-600 dark:text-gray-300">Rasakan racikan kopi spesial, pastry hangat, dan suasana cozy untuk kerja atau santai.</p>
+            <div class="mt-6 flex gap-3">
+              <a href="#products" class="px-5 py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700">Lihat Menu</a>
+              <button id="btnReserveHero" class="px-5 py-3 rounded-xl border border-gray-300 dark:border-gray-700 hover:border-brand-600">Reservasi</button>
+            </div>
+          </div>
+          <div class="relative">
+            <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-smooth bg-gradient-to-br from-amber-100 to-amber-300 dark:from-amber-800 dark:to-amber-600">
+              <img src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=1200&auto=format&fit=crop" alt="Coffee" class="w-full h-full object-cover mix-blend-multiply opacity-90" />
+            </div>
+            <div class="absolute -bottom-4 -right-4 bg-white dark:bg-gray-800 rounded-xl px-4 py-3 shadow-smooth hidden md:flex items-center gap-3">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-700">☕</span>
+              <div>
+                <p class="text-sm font-semibold">Happy Hour 7–9 AM</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Buy 1 Get 1 Coffee</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <main id="products" class="flex-1">
+      <div class="max-w-7xl mx-auto px-4 pb-16">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">Menu Andalan</h2>
+          <button id="btnRefresh" class="text-sm px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-brand-600">Muat Ulang</button>
+        </div>
+        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="hidden text-center py-16">
+          <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 mb-4">🧐</div>
+          <h3 class="text-lg font-semibold mb-1">Menu tidak ditemukan</h3>
+          <p class="text-gray-600 dark:text-gray-400">Coba ubah kata kunci atau filter.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-4 gap-6 text-sm">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white font-bold">HC</span>
+            <span class="font-semibold">Hilmi Cafe</span>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">Kopi spesial, pastry hangat, suasana cozy.</p>
+        </div>
+        <div>
+          <p class="font-semibold mb-2">Bantuan</p>
+          <ul class="space-y-1 text-gray-600 dark:text-gray-400">
+            <li><a href="#" class="hover:text-brand-600">Pusat Bantuan</a></li>
+            <li><a href="#" class="hover:text-brand-600">Pengiriman</a></li>
+            <li><a href="#" class="hover:text-brand-600">Pengembalian</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold mb-2">Perusahaan</p>
+          <ul class="space-y-1 text-gray-600 dark:text-gray-400">
+            <li><a href="#" class="hover:text-brand-600">Tentang Kami</a></li>
+            <li><a href="#" class="hover:text-brand-600">Karir</a></li>
+            <li><a href="#" class="hover:text-brand-600">Kontak</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold mb-2">Newsletter</p>
+          <div class="flex gap-2">
+            <input type="email" placeholder="Email kamu" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70" />
+            <button class="px-3 py-2 rounded-lg bg-brand-600 text-white">Daftar</button>
+          </div>
+        </div>
+      </div>
+      <div class="text-center text-xs text-gray-500 dark:text-gray-400 py-4">© <span id="year"></span> Hilmi Cafe. All rights reserved.</div>
+    </footer>
+  </div>
+
+  <!-- Cart Drawer -->
+  <aside id="cartDrawer" class="fixed inset-y-0 right-0 w-full sm:w-[420px] bg-white dark:bg-gray-900 shadow-smooth translate-x-full transition-transform z-50 flex flex-col">
+    <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+      <h3 class="text-lg font-semibold">Pesanan</h3>
+      <button id="btnCloseCart" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i class="ph ph-x"></i></button>
+    </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-800"></div>
+    <div class="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+      <div class="flex items-center justify-between text-sm">
+        <span>Subtotal</span>
+        <span id="cartSubtotal" class="font-semibold">Rp0</span>
+      </div>
+      <button class="w-full py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700">Checkout</button>
+    </div>
+  </aside>
+
+  <!-- Quick View Modal -->
+  <div id="modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl w-[95%] max-w-2xl shadow-smooth overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+        <h3 id="modalTitle" class="text-lg font-semibold">Detail Menu</h3>
+        <button id="btnCloseModal" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i class="ph ph-x"></i></button>
+      </div>
+      <div id="modalBody" class="p-4 grid md:grid-cols-2 gap-4">
+        <!-- Injected content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Reservation Modal -->
+  <div id="reserveModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl w-[95%] max-w-lg shadow-smooth overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
+        <h3 class="text-lg font-semibold">Reservasi Meja</h3>
+        <button id="btnCloseReserve" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"><i class="ph ph-x"></i></button>
+      </div>
+      <form id="reserveForm" class="p-4 grid gap-3">
+        <div class="grid md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-sm">Nama</label>
+            <input required name="name" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70"/>
+          </div>
+          <div>
+            <label class="text-sm">Telepon</label>
+            <input required name="phone" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70"/>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-sm">Tanggal</label>
+            <input required type="date" name="date" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70"/>
+          </div>
+          <div>
+            <label class="text-sm">Waktu</label>
+            <input required type="time" name="time" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70"/>
+          </div>
+        </div>
+        <div>
+          <label class="text-sm">Jumlah Orang</label>
+          <input required type="number" min="1" max="20" name="people" class="mt-1 w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/70 dark:bg-gray-800/70"/>
+        </div>
+        <button class="mt-2 px-4 py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700">Kirim</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 hidden"></div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
